@@ -1,0 +1,248 @@
+<template>
+    <div class="kanban-container" style={containerStyle}>
+        <!-- Header -->
+        <div class="kanban-header">
+            <h2 class="slds-text-heading_medium slds-m-bottom_small">
+                Praktikant Attendance Status - {todayDate}
+            </h2>
+            <lightning-button 
+                label="Refresh" 
+                icon-name="utility:refresh" 
+                onclick={handleRefresh}
+                class="slds-m-left_small">
+            </lightning-button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading Praktikants..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error Message -->
+        <template if:true={error}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium">
+                <lightning-icon icon-name="utility:error" variant="error" size="x-small"></lightning-icon>
+                <span class="slds-m-left_x-small">{error}</span>
+            </div>
+        </template>
+
+        <!-- Kanban Board -->
+        <template if:false={isLoading}>
+            <div class="kanban-board">
+                <!-- Unentschuldigt Column -->
+                <div class="kanban-column" 
+                     data-status="Unentschuldigt"
+                     ondragover={handleDragOver}
+                     ondrop={handleDrop}>
+                    <div class="column-header unentschuldigt-header">
+                        <lightning-icon icon-name="utility:warning" variant="error" size="small"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-left_x-small">
+                            Unentschuldigt ({unentschuldigtCount})
+                        </h3>
+                    </div>
+                    <div class="card-container" data-status="Unentschuldigt">
+                        <template for:each={unentschuldigtItems} for:item="item">
+                            <div key={item.Id} 
+                                 class="praktikant-card" 
+                                 data-id={item.Id}
+                                 draggable="true"
+                                 ondragstart={handleDragStart}
+                                 ondragend={handleDragEnd}
+                                 ontouchstart={handleTouchStart}
+                                 ontouchmove={handleTouchMove}
+                                 ontouchend={handleTouchEnd}>
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                                        <strong class="slds-m-left_x-small">{item.Name_Anzeige__c}</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="slds-text-body_small slds-m-top_x-small">
+                                            <lightning-icon icon-name="utility:work" size="x-small"></lightning-icon>
+                                            <span class="slds-m-left_x-small">{item.Taetigkeit__c}</span>
+                                        </p>
+                                        <template if:true={item.Name_Link__c}>
+                                            <p class="slds-text-body_small slds-m-top_x-small">
+                                                <lightning-icon icon-name="utility:link" size="x-small"></lightning-icon>
+                                                <a href={item.Name_Link__c} 
+                                                   target="_blank" 
+                                                   class="slds-m-left_x-small">Profile Link</a>
+                                            </p>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="drag-handle">
+                                    <lightning-icon icon-name="utility:drag_and_drop" size="x-small"></lightning-icon>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Anwesend Column -->
+                <div class="kanban-column" 
+                     data-status="Anwesend"
+                     ondragover={handleDragOver}
+                     ondrop={handleDrop}>
+                    <div class="column-header anwesend-header">
+                        <lightning-icon icon-name="utility:success" variant="success" size="small"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-left_x-small">
+                            Anwesend ({anwesendCount})
+                        </h3>
+                    </div>
+                    <div class="card-container" data-status="Anwesend">
+                        <template for:each={anwesendItems} for:item="item">
+                            <div key={item.Id} 
+                                 class="praktikant-card" 
+                                 data-id={item.Id}
+                                 draggable="true"
+                                 ondragstart={handleDragStart}
+                                 ondragend={handleDragEnd}
+                                 ontouchstart={handleTouchStart}
+                                 ontouchmove={handleTouchMove}
+                                 ontouchend={handleTouchEnd}>
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                                        <strong class="slds-m-left_x-small">{item.Name_Anzeige__c}</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="slds-text-body_small slds-m-top_x-small">
+                                            <lightning-icon icon-name="utility:work" size="x-small"></lightning-icon>
+                                            <span class="slds-m-left_x-small">{item.Taetigkeit__c}</span>
+                                        </p>
+                                        <template if:true={item.Name_Link__c}>
+                                            <p class="slds-text-body_small slds-m-top_x-small">
+                                                <lightning-icon icon-name="utility:link" size="x-small"></lightning-icon>
+                                                <a href={item.Name_Link__c} 
+                                                   target="_blank" 
+                                                   class="slds-m-left_x-small">Profile Link</a>
+                                            </p>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="drag-handle">
+                                    <lightning-icon icon-name="utility:drag_and_drop" size="x-small"></lightning-icon>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Entschuldigt Column -->
+                <div class="kanban-column" 
+                     data-status="Entschuldigt"
+                     ondragover={handleDragOver}
+                     ondrop={handleDrop}>
+                    <div class="column-header entschuldigt-header">
+                        <lightning-icon icon-name="utility:info" variant="warning" size="small"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-left_x-small">
+                            Entschuldigt ({entschuldigtCount})
+                        </h3>
+                    </div>
+                    <div class="card-container" data-status="Entschuldigt">
+                        <template for:each={entschuldigtItems} for:item="item">
+                            <div key={item.Id} 
+                                 class="praktikant-card" 
+                                 data-id={item.Id}
+                                 draggable="true"
+                                 ondragstart={handleDragStart}
+                                 ondragend={handleDragEnd}
+                                 ontouchstart={handleTouchStart}
+                                 ontouchmove={handleTouchMove}
+                                 ontouchend={handleTouchEnd}>
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                                        <strong class="slds-m-left_x-small">{item.Name_Anzeige__c}</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="slds-text-body_small slds-m-top_x-small">
+                                            <lightning-icon icon-name="utility:work" size="x-small"></lightning-icon>
+                                            <span class="slds-m-left_x-small">{item.Taetigkeit__c}</span>
+                                        </p>
+                                        <template if:true={item.Name_Link__c}>
+                                            <p class="slds-text-body_small slds-m-top_x-small">
+                                                <lightning-icon icon-name="utility:link" size="x-small"></lightning-icon>
+                                                <a href={item.Name_Link__c} 
+                                                   target="_blank" 
+                                                   class="slds-m-left_x-small">Profile Link</a>
+                                            </p>
+                                        </template>
+                                        <template if:true={item.Grund_der_Abwesenheit__c}>
+                                            <p class="slds-text-body_small slds-m-top_x-small reason-text">
+                                                <lightning-icon icon-name="utility:comments" size="x-small"></lightning-icon>
+                                                <span class="slds-m-left_x-small">{item.Grund_der_Abwesenheit__c}</span>
+                                            </p>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="drag-handle">
+                                    <lightning-icon icon-name="utility:drag_and_drop" size="x-small"></lightning-icon>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal for Absence Reason -->
+        <template if:true={showReasonModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+                     class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-id slds-modal__title">
+                            Grund der Abwesenheit
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p class="slds-m-bottom_medium">
+                            Bitte geben Sie den Grund für die Abwesenheit von <strong>{selectedPraktikantName}</strong> ein:
+                        </p>
+                        <lightning-textarea
+                            name="reasonText"
+                            label="Grund der Abwesenheit"
+                            placeholder="Bitte Grund eingeben..."
+                            value={reasonText}
+                            onchange={handleReasonChange}
+                            required>
+                        </lightning-textarea>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeModal}>
+                            Abbrechen
+                        </button>
+                        <button class="slds-button slds-button_brand" 
+                                onclick={saveReason} 
+                                disabled={isReasonEmpty}>
+                            Speichern
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Touch Drag Preview -->
+        <template if:true={isDragging}>
+            <div class="drag-preview" style={dragPreviewStyle}>
+                <div class="praktikant-card drag-preview-card">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                            <strong class="slds-m-left_x-small">{draggedItem.Name_Anzeige__c}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
