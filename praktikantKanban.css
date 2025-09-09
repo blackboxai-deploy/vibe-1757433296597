@@ -1,0 +1,348 @@
+/* Kanban Container */
+.kanban-container {
+    background: #f3f2f2;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.kanban-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+/* Kanban Board Layout */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    height: calc(100% - 80px);
+    min-height: 400px;
+}
+
+/* Kanban Columns */
+.kanban-column {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    min-height: 300px;
+}
+
+.kanban-column.drag-over {
+    border-color: #1589ee;
+    background-color: #f0f8ff;
+    transform: scale(1.02);
+}
+
+/* Column Headers */
+.column-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+    font-weight: bold;
+    min-height: 60px;
+}
+
+.unentschuldigt-header {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.anwesend-header {
+    background: linear-gradient(135deg, #51cf66, #47b857);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.entschuldigt-header {
+    background: linear-gradient(135deg, #ffa94d, #fd7e14);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Card Container */
+.card-container {
+    flex: 1;
+    padding: 0.5rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+/* Praktikant Cards */
+.praktikant-card {
+    background: #ffffff;
+    border: 1px solid #d8dde6;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    cursor: grab;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    touch-action: none; /* Prevent default touch behaviors */
+}
+
+.praktikant-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    border-color: #1589ee;
+}
+
+.praktikant-card:active,
+.praktikant-card.dragging {
+    cursor: grabbing;
+    opacity: 0.8;
+    transform: rotate(5deg) scale(1.05);
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #181818;
+}
+
+.card-body p {
+    margin: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    color: #5c6b73;
+    font-size: 0.875rem;
+}
+
+.card-body a {
+    color: #1589ee;
+    text-decoration: none;
+}
+
+.card-body a:hover {
+    text-decoration: underline;
+}
+
+.reason-text {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border-left: 3px solid #ffa94d;
+    font-style: italic;
+}
+
+/* Drag Handle */
+.drag-handle {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.praktikant-card:hover .drag-handle {
+    opacity: 0.7;
+}
+
+/* Drag Preview for Touch */
+.drag-preview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 0.8;
+}
+
+.drag-preview-card {
+    background: #ffffff;
+    border: 2px solid #1589ee;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    transform: rotate(-2deg);
+}
+
+/* Modal Styling Enhancements */
+.slds-modal__content {
+    min-height: 150px;
+}
+
+.slds-modal__header h2 {
+    color: #181818;
+    font-weight: 600;
+}
+
+/* Loading and Error States */
+.slds-spinner_container {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+}
+
+.slds-notify {
+    border-radius: 6px;
+    margin: 1rem 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .kanban-column {
+        min-height: 200px;
+    }
+    
+    .praktikant-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        min-height: 80px;
+        touch-action: manipulation; /* Better touch handling on mobile */
+    }
+    
+    .card-header {
+        font-size: 1rem;
+    }
+    
+    .card-body p {
+        font-size: 0.9rem;
+    }
+    
+    .drag-handle {
+        opacity: 0.6;
+        top: 1rem;
+        right: 1rem;
+    }
+}
+
+/* Tablet Specific (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .kanban-board {
+        gap: 1rem;
+    }
+    
+    .praktikant-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        min-height: 90px;
+        cursor: grab;
+        touch-action: none;
+    }
+    
+    .praktikant-card:active {
+        cursor: grabbing;
+    }
+    
+    .column-header {
+        padding: 1.25rem;
+        min-height: 70px;
+    }
+    
+    /* Enhanced touch targets for tablet */
+    .drag-handle {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+    
+    .praktikant-card:hover .drag-handle,
+    .praktikant-card:active .drag-handle {
+        opacity: 0.8;
+    }
+}
+
+/* Large Screens */
+@media (min-width: 1200px) {
+    .kanban-container {
+        padding: 1.5rem;
+    }
+    
+    .kanban-board {
+        gap: 1.5rem;
+    }
+    
+    .card-container {
+        padding: 1rem;
+    }
+    
+    .praktikant-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animation for smooth transitions */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.praktikant-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Accessibility Improvements */
+.praktikant-card:focus {
+    outline: 2px solid #1589ee;
+    outline-offset: 2px;
+}
+
+.kanban-column:focus-within {
+    border-color: #1589ee;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .praktikant-card {
+        border-width: 2px;
+        border-color: #000;
+    }
+    
+    .column-header {
+        border-bottom-width: 2px;
+        border-bottom-color: #000;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .praktikant-card,
+    .kanban-column {
+        transition: none;
+    }
+    
+    .praktikant-card {
+        animation: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .kanban-container {
+        background: white;
+        box-shadow: none;
+    }
+    
+    .praktikant-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .drag-handle {
+        display: none;
+    }
+}
